@@ -1,12 +1,18 @@
+"""
+Authors: Krzysztof Skwira & Tomasz Lemke
+To run program install
+pip install numpy
+"""
+
 import argparse
 import json
 import csv
 import numpy as np
 
 from compute_scores import euclidean_score
-"""
 
-"""
+
+# Capturing the user name as an argument for the later use
 def build_arg_parser():
     parser = argparse.ArgumentParser(description='Find users who are similar to the input user')
     parser.add_argument('--user', dest='user', required=True,
@@ -33,9 +39,12 @@ def find_similar_users(dataset, user, num_users):
     return scores[top_users]
 
 
+# Specifying the input files
 csvFilePath = 'ratings_csv.csv'
 jsonFilePath = 'ratings_json.json'
 
+
+# Reading CSV file
 with open(csvFilePath, mode='r', encoding='utf-8-sig') as file:
     # reading the CSV file
     csvFile = csv.DictReader(file, delimiter=';')
@@ -56,15 +65,20 @@ if __name__ == '__main__':
     args = build_arg_parser().parse_args()
     user = args.user
 
+    # reading Json
     with open(jsonFilePath, 'r', encoding='utf-8-sig') as f:
         data = json.loads(f.read())
 
+    # finding similarities between selected user and possible users from Json list
     print('\nUsers similar to ' + user + ':\n')
-    similar_users = find_similar_users(data, user, 2)
+    similar_users = find_similar_users(data, user, 1)
     print('User\t\t\tSimilarity score')
     print('-' * 41)
+
+    # Printing out the results
     for item in similar_users:
         print(item[0], '\t\t', round(float(item[1]), 2))
+        print('\n')
         if item[0] in data:
             # sorting movies for the current similar user from best rated to worst rated
             data[item[0]] = dict(sorted(data[item[0]].items(), reverse=True, key=lambda it: it[1]))
@@ -78,16 +92,18 @@ if __name__ == '__main__':
             print(unique_movies)
             print('\n')
 
-            print("3 top movies:")
-            top3 = list(unique_movies.keys())[:3]
-            for i in top3:
+            # listing the top 5 recommended unique movies
+            print("Top 5 recommended movies:")
+            top5 = list(unique_movies.keys())[:5]
+            for i in top5:
                 print(i)
 
             print('\n')
 
-            print("3 worst movies:")
-            worst3 = list(unique_movies.keys())[-3:]
-            for i in worst3:
+            # listing the 5 not recommended unique movies
+            print("5 movies NOT recommended:")
+            worst5 = list(unique_movies.keys())[-5:]
+            for i in worst5:
                 print(i)
 
             print('\n')
