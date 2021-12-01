@@ -1,7 +1,6 @@
 """
 Authors: Krzysztof Skwira & Tomasz Lemke
-To run program install
-XXXXX
+See README.md for description
 """
 
 import pandas as pd

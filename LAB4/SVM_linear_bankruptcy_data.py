@@ -1,7 +1,6 @@
 """
 Authors: Krzysztof Skwira & Tomasz Lemke
-To run program install
-XXXXX
+See README.md for description
 """
 
 import pandas as pd
@@ -23,7 +22,7 @@ bankruptcy_features = ['Industrial Risk', 'Management Risk', 'Financial Flexibil
 # Positive = 0
 # Average = 1
 # Negative = 2
-replace_data_map = {'P': 0, 'A': 1, 'N': 2, 'B': 'Bankruptcy', 'NB': 'Non-Bankruptcy'}
+replace_data_map = {'P': 1, 'A': 0, 'N': -1, 'B': 'Bankruptcy', 'NB': 'Non-Bankruptcy'}
 df.replace(replace_data_map, inplace=True)
 
 # Separating the features
