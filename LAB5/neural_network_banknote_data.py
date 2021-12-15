@@ -43,7 +43,7 @@ X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X_banknote, 
 # Building an MLP (Multi-layer perceptron) Classifier with 1 hidden layer (50 neurons)
 # using sgd (Stochastic Gradient Descent) solver and default (ReLU) activation function
 mlp = MLPClassifier(hidden_layer_sizes=(50,), max_iter=100, solver='sgd',
-                    verbose=10, random_state=1)
+                    verbose=10, random_state=1, learning_rate_init=0.1)
 mlp.fit(X_train, Y_train)
 
 # Printing the training set & test set scores
