@@ -6,7 +6,7 @@ See README.md for description
 import pandas as pd
 import itertools as it
 import matplotlib.pyplot as plt
-from sklearn import preprocessing, svm, model_selection, metrics
+from sklearn import preprocessing, model_selection, metrics
 from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -40,65 +40,41 @@ X_banknote = StandardScaler().fit_transform(X_banknote)
 X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X_banknote, Y_banknote,
                                                                     test_size=0.4, random_state=0)
 
-# Building an SVC (Support Vector Classification) model using radial basis function (RBF)
-svc = svm.SVC(kernel='rbf', C=1, gamma=1).fit(X_train, Y_train)
-mlp = MLPClassifier(hidden_layer_sizes=(50,), max_iter=10, alpha=1e-4, solver='sgd', verbose=10, random_state=1, learning_rate_init=.1)
+# Building an MLP (Multi-layer perceptron) Classifier with 1 hidden layer (50 neurons)
+# using sgd (Stochastic Gradient Descent) solver and default (ReLU) activation function
+mlp = MLPClassifier(hidden_layer_sizes=(50,), max_iter=100, solver='sgd',
+                    verbose=10, random_state=1)
 mlp.fit(X_train, Y_train)
+
+# Printing the training set & test set scores
 print(f'Training set score: {mlp.score(X_train, Y_train):.2%}')
 print(f'Test set score: {mlp.score(X_test, Y_test):.2%}')
 
-# Validating the robustness of the model using K-Fold Cross validation technique
-# We give the model, the entire data set and its real values, and the number of folds
-scores_result = model_selection.cross_val_score(svc, X_banknote, Y_banknote, cv=5)
+# Dimensionality Reduction using PCA (Principal Component Analysis)
+# n_components = 2 means transforming into a 2-Dimensional dataset
+pca = PCA(n_components=2, whiten=True).fit(X_banknote)
+X_pca = pca.transform(X_banknote)
 
-# Printing the accuracy of each fold and the mean of all 5 folds
-print(f'Model accuracy scores: {scores_result}')
-print(f'Model accuracy mean: {scores_result.mean():.2%}')
+"""
+The explained variance tells you how much information (variance) can be attributed
+to each of the principal components. This is important as while you can convert
+4 dimensional space to 2 dimensional space, you lose some of the variance (information)
+when you do this
+"""
 
-fig, axes = plt.subplots(4, 4)
-# use global min / max to ensure all weights are shown on the same scale
-vmin, vmax = mlp.coefs_[0].min(), mlp.coefs_[0].max()
-for coef, ax in zip(mlp.coefs_[0].T, axes.ravel()):
-    ax.matshow(coef.reshape(28, 28), cmap=plt.cm.gray, vmin=.5 * vmin, vmax=.5 * vmax)
-    ax.set_xticks(())
-    ax.set_yticks(())
+print(f'Explained variance ratio for component 1: {pca.explained_variance_ratio_[0]:.2%}')
+print(f'Explained variance ratio for component 2: {pca.explained_variance_ratio_[1]:.2%}')
+print(f'Preserved variance sum: {sum(pca.explained_variance_ratio_):.2%}')
 
+# Printing scatter plot to view classification of the simplified dataset
+colors = it.cycle('gr')
+target_names = banknote_labels
+plt.figure()
+for t_name, c in zip(target_names, colors):
+    plt.scatter(X_pca[Y_banknote == t_name, 0], X_pca[Y_banknote == t_name, 1], c=c, label=t_name)
+
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.title('2 Component PCA visualization')
+plt.legend()
 plt.show()
-#
-# # Predicting the results using the test data
-# # and printing the fist 3 prediction values and accuracy of predictions
-# prediction_results = svc.predict(X_test)
-# print(f'The first given banknote is: {prediction_results[0]}')
-# print(f'The second given banknote is: {prediction_results[1]}')
-# print(f'The third given banknote is: {prediction_results[2]}')
-# print(f'Predictions accuracy score: {metrics.accuracy_score(Y_test, prediction_results):.2%}')
-#
-# # Dimensionality Reduction using PCA (Principal Component Analysis)
-# # n_components = 2 means transforming into a 2-Dimensional dataset
-#
-# pca = PCA(n_components=2, whiten=True).fit(X_banknote)
-# X_pca = pca.transform(X_banknote)
-#
-# """
-# The explained variance tells you how much information (variance) can be attributed
-# to each of the principal components. This is important as while you can convert
-# 4 dimensional space to 2 dimensional space, you lose some of the variance (information)
-# when you do this
-# """
-#
-# print(f'Explained variance ratio for component 1: {pca.explained_variance_ratio_[0]:.2%}')
-# print(f'Explained variance ratio for component 2: {pca.explained_variance_ratio_[1]:.2%}')
-# print(f'Preserved variance sum: {sum(pca.explained_variance_ratio_):.2%}')
-#
-# # Printing scatter plot to view classification of the simplified dataset
-# colors = it.cycle('gr')
-# target_names = banknote_labels
-# plt.figure()
-# for t_name, c in zip(target_names, colors):
-#     plt.scatter(X_pca[Y_banknote == t_name, 0], X_pca[Y_banknote == t_name, 1], c=c, label=t_name)
-#
-# plt.xlabel('Principal Component 1')
-# plt.ylabel('Principal Component 2')
-# plt.title('2 Component PCA visualization')
-# plt.legend()
-# plt.show()
