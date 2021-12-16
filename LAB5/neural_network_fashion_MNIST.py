@@ -5,30 +5,16 @@ See README.md for description
 
 import warnings
 import matplotlib.pyplot as plt
-import numpy as np
 from keras.datasets import fashion_mnist
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.neural_network import MLPClassifier
-from sklearn import metrics
 import random
-
-
-# Defining the Confusion Matrix
-def plot_confusion_matrix(cm, names, title='Confusion matrix', cmap=plt.cm.Blues):
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(names))
-    plt.xticks(tick_marks, names, rotation=90)
-    plt.yticks(tick_marks, names)
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
 
 
 # Loading data from Karas dataset
 (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
-labels = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+labels = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+          'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
 # Displaying 21 random images of X_train
 ROW = 3
@@ -54,32 +40,33 @@ X_test = X_test.reshape(-1, 784)
 y_train = y_train.ravel()
 y_test = y_test.ravel()
 
-# Building an MLP (Multi-layer perceptron) Classifier with 1 hidden layer (100 neurons)
-# using default (adam) solver and default (ReLU) activation function
-mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=10,
-                    verbose=10, random_state=1)
+# Building 3 different MLP (Multi-layer perceptron) Classifiers to compare efficiency
+# mlp1 = 1 hidden layer (100 neurons)
+# mlp2 = 1 hidden layer (500 neurons)
+# mlp3 = 1 hidden layer (700 neurons)
+# all use default (adam) solver and default (ReLU) activation function
+mlp1 = MLPClassifier(hidden_layer_sizes=(100,), max_iter=10,
+                     verbose=10, random_state=1)
+mlp2 = MLPClassifier(hidden_layer_sizes=(500,), max_iter=10,
+                     verbose=10, random_state=1)
+mlp3 = MLPClassifier(hidden_layer_sizes=(700,), max_iter=10,
+                     verbose=10, random_state=1)
 
-# This example won't converge because of time constraints, so we catch the
-# warning and are ignore it here
+# This example won't converge because of time constraints, so we catch and ignore the warning
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=ConvergenceWarning, module="sklearn")
-    mlp.fit(X_train, y_train)
+    mlp1.fit(X_train, y_train)
+    mlp2.fit(X_train, y_train)
+    mlp3.fit(X_train, y_train)
 
 # Printing the training set & test set scores
-print(f'Training set score: {mlp.score(X_train, y_train):.2%}')
-print(f'Test set score: {mlp.score(X_test, y_test):.2%}')
-
-# Printing the Confusion Matrix and scores
-prediction = mlp.predict(X_test)
-f1_score = metrics.f1_score(y_test, prediction, average="weighted")
-accuracy_score = metrics.accuracy_score(y_test, prediction)
-confusion_matrix = metrics.confusion_matrix(y_test, prediction)
-print("-------------------SVM Report-----------------")
-print(f"F1 score: {f1_score:.2%}")
-print(f"Accuracy score: {accuracy_score:.2%}")
-print("Confusion matrix: \n", confusion_matrix)
-print('Plotting confusion matrix')
-plt.figure()
-plot_confusion_matrix(confusion_matrix, labels)
-plt.show()
-print(metrics.classification_report(y_test, prediction))
+print("-------------------SET SCORES-----------------")
+print('MLP1 SCORES: 1 hidden layer (100 neurons)')
+print(f'Training set score: {mlp1.score(X_train, y_train):.2%}')
+print(f'Test set score: {mlp1.score(X_test, y_test):.2%}')
+print('MLP2 SCORES: 1 hidden layer (500 neurons)')
+print(f'Training set score: {mlp2.score(X_train, y_train):.2%}')
+print(f'Test set score: {mlp2.score(X_test, y_test):.2%}')
+print('MLP3 SCORES: 1 hidden layer (700 neurons)')
+print(f'Training set score: {mlp3.score(X_train, y_train):.2%}')
+print(f'Test set score: {mlp3.score(X_test, y_test):.2%}')

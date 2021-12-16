@@ -5,30 +5,35 @@ See README.md for description
 
 import warnings
 import matplotlib.pyplot as plt
-import numpy as np
-from keras.datasets import cifar10
+from keras.datasets import cifar100
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.neural_network import MLPClassifier
-from sklearn import metrics
-
-
-# Defining the Confusion Matrix
-def plot_confusion_matrix(cm, names, title='Confusion matrix', cmap=plt.cm.Blues):
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(names))
-    plt.xticks(tick_marks, names, rotation=90)
-    plt.yticks(tick_marks, names)
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
 
 
 # Loading data from Karas dataset
-(X_train, y_train), (X_test, y_test) = cifar10.load_data()
-labels = ['airplane', 'automobile', 'bird', 'cat', 'deer',
-          'dog', 'frog', 'horse', 'ship', 'truck']
+(X_train, y_train), (X_test, y_test) = cifar100.load_data(label_mode="fine")
+labels = [
+    'apple', 'aquarium_fish', 'baby', 'bear', 'beaver',
+    'bed', 'bee', 'beetle', 'bicycle', 'bottle',
+    'bowl', 'boy', 'bridge', 'bus', 'butterfly',
+    'camel', 'can', 'castle', 'caterpillar', 'cattle',
+    'chair', 'chimpanzee', 'clock', 'cloud', 'cockroach',
+    'couch', 'crab', 'crocodile', 'cup', 'dinosaur',
+    'dolphin', 'elephant', 'flatfish', 'forest', 'fox',
+    'girl', 'hamster', 'house', 'kangaroo', 'keyboard',
+    'lamp', 'lawn_mower', 'leopard', 'lion', 'lizard',
+    'lobster', 'man', 'maple_tree', 'motorcycle', 'mountain',
+    'mouse', 'mushroom', 'oak_tree', 'orange', 'orchid',
+    'otter', 'palm_tree', 'pear', 'pickup_truck', 'pine_tree',
+    'plain', 'plate', 'poppy', 'porcupine', 'possum',
+    'rabbit', 'raccoon', 'ray', 'road', 'rocket',
+    'rose', 'sea', 'seal', 'shark', 'shrew',
+    'skunk', 'skyscraper', 'snail', 'snake', 'spider',
+    'squirrel', 'streetcar', 'sunflower', 'sweet_pepper', 'table',
+    'tank', 'telephone', 'television', 'tiger', 'tractor',
+    'train', 'trout', 'tulip', 'turtle', 'wardrobe',
+    'whale', 'willow_tree', 'wolf', 'woman', 'worm'
+]
 
 # Displaying the first 21 images of X_train
 fig, axes = plt.subplots(ncols=7, nrows=3, figsize=(17, 8))
@@ -43,8 +48,8 @@ for i in range(3):
 plt.show()
 
 # Normalizing/Reshaping the data
-X_train = X_train/255
-X_test = X_test/255
+X_train = X_train / 255
+X_test = X_test / 255
 # 32x32 RGB = 32 * 32 * 3
 X_train = X_train.reshape(-1, 3072)
 X_test = X_test.reshape(-1, 3072)
@@ -64,18 +69,3 @@ with warnings.catch_warnings():
 # Printing the training set & test set scores
 print(f'Training set score: {mlp.score(X_train, y_train):.2%}')
 print(f'Test set score: {mlp.score(X_test, y_test):.2%}')
-
-# Printing the Confusion Matrix and scores
-prediction = mlp.predict(X_test)
-f1_score = metrics.f1_score(y_test, prediction, average="weighted")
-accuracy_score = metrics.accuracy_score(y_test, prediction)
-confusion_matrix = metrics.confusion_matrix(y_test, prediction)
-print("-----------------SVM Report-----------------")
-print(f"F1 score: {f1_score:.2%}")
-print(f"Accuracy score: {accuracy_score:.2%}")
-print("Confusion matrix: \n", confusion_matrix)
-print('Plotting confusion matrix')
-plt.figure()
-plot_confusion_matrix(confusion_matrix, labels)
-plt.show()
-print(metrics.classification_report(y_test, prediction))
