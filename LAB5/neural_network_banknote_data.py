@@ -6,7 +6,7 @@ See README.md for description
 import pandas as pd
 import itertools as it
 import matplotlib.pyplot as plt
-from sklearn import preprocessing, model_selection, metrics
+from sklearn import preprocessing, model_selection
 from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler

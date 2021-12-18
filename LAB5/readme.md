@@ -76,7 +76,6 @@ pip install matplotlib.pyplot \
 pip install sklearn  
 pip install keras \
 pip install TensorFlow  
-pip install opencv-python
 
 
 <h3>
