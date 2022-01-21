@@ -8,11 +8,14 @@ import pickle
 import gym
 import numpy as np
 
+# selecting game environment
 env = gym.make('MsPacman-v0')
 
+# using previous game/training game stats
 with open("MsPacman_qTable.pkl", 'rb') as f:
     Q = pickle.load(f)
 
+# running game for X times
 for episode in range(1, 11):
     done = False
     G, reward = 0, 0
@@ -20,9 +23,16 @@ for episode in range(1, 11):
 
     while not done:
         env.render()
+        # using "best" moves from loaded stats
         action = np.argmax(Q[state[:, :, 0]])
+
+        # update stats and steps with selected move
         state2, reward, done, info = env.step(action)
+
+        # update total score
         G += reward
+
+        # update current state of the game
         state = state2
 
     print('Episode {} Total Reward: {}'.format(episode, G))

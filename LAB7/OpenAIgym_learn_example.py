@@ -8,16 +8,20 @@ import pickle
 import gym
 import numpy as np
 
+# selecting game environment
 env = gym.make('MsPacman-v0')
 
+
 alpha = 0.618
-G = 0
-env_features = 210 * 160
+G = 0  # score
+env_features = 210 * 160  # size of the map
 lr_rate = 0.81
 gamma = 0.96
 
+# zeroing the Q-table
 Q = np.zeros([env_features, env.action_space.n])
 
+# learning best steps in X iteration
 for episode in range(1, 61):
     done = False
     G, reward = 0, 0
@@ -25,17 +29,27 @@ for episode in range(1, 61):
 
     while not done:
         env.render()
+        # deciding if the next move should be random or based on the "past record"
         if random.random() < (0.8 / (episode * .1)):  # take less random steps as you learn more about the game
             action = random.randint(0, env.action_space.n - 1)
         else:
             action = np.argmax(Q[state[:, :, 0]])
+
+        # update stats and steps with selected move
         state2, reward, done, info = env.step(action)
+
+        # adding formula score into Q-table
         Q[state[:, :, 0], action] += alpha * (reward + np.max(Q[state2[:, :, 0]]) - Q[state[:, :, 0], action])
+
+        # update the score
         G += reward
+
+        # update current state of the game
         state = state2
 
     print('Episode {} Total Reward: {}'.format(episode, G))
 
+# save the learned outcomes in a file
 with open("MsPacman_qTable.pkl", 'wb') as f:
     pickle.dump(Q, f)
 
